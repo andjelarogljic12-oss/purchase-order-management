@@ -63,4 +63,88 @@ public class Kontroler {
         }
         
     }
+    
+    
+    public List<Narudzbenica> vratiNarudzbenice() throws Exception {
+        DbBroker db = new DbBroker();
+        try {
+            db.otvoriKonekciju();
+            return db.vratiNarudzbenice();
+        } finally {
+            db.zatvoriKonekciju();
+        }
+    }
+    
+    
+    public void obrisiNarudzbenicu(int sifra) throws Exception {
+        DbBroker db = new DbBroker();
+        try {
+            db.otvoriKonekciju();
+
+            List<StavkaNarudzbenice> stavke = db.vratiStavke(sifra);
+            for (StavkaNarudzbenice s : stavke) {
+                db.povecajStanje(s.getMaterijal().getMaterijalId(), s.getKolicina());
+            }
+
+            db.obrisiStavke(sifra);
+            int obrisano = db.obrisiNarudzbenicu(sifra);
+            if (obrisano == 0) {
+                throw new Exception("Narudžbenica ne postoji (možda je već obrisana).");
+            }
+
+            db.commit();
+        } catch (Exception e) {
+            db.rollback();
+            throw e;
+        } finally {
+            db.zatvoriKonekciju();
+        }
+    }
+    
+    
+    public List<StavkaNarudzbenice> vratiStavke(int sifra) throws Exception {
+        DbBroker db = new DbBroker();
+        try {
+            db.otvoriKonekciju();
+            return db.vratiStavke(sifra);
+        } finally {
+            db.zatvoriKonekciju();
+        }
+    }
+
+    public void izmeniNarudzbenicu(Narudzbenica n) throws Exception {
+        DbBroker db = new DbBroker();
+        try {
+            db.otvoriKonekciju();
+            int sifra = n.getSifraNarudzbenice();
+
+            List<StavkaNarudzbenice> stare = db.vratiStavke(sifra);
+            for (StavkaNarudzbenice s : stare) {
+                db.povecajStanje(s.getMaterijal().getMaterijalId(), s.getKolicina());
+            }
+            db.obrisiStavke(sifra);
+
+            if (db.izmeniNarudzbenicu(n) == 0) {
+                throw new Exception("Narudžbenica ne postoji (možda je obrisana).");
+            }
+
+            int redniBr = 1;
+            for (StavkaNarudzbenice s : n.getStavke()) {
+                s.setRedniBr(redniBr++);
+                db.dodajStavku(sifra, s);
+
+                int promenjeno = db.smanjiStanje(s.getMaterijal().getMaterijalId(), s.getKolicina());
+                if (promenjeno == 0) {
+                    throw new Exception("Nema dovoljno materijala: " + s.getMaterijal().getNazivMaterijala());
+                }
+            }
+
+            db.commit();
+        } catch (Exception e) {
+            db.rollback();
+            throw e;
+        } finally {
+            db.zatvoriKonekciju();
+        }
+    }
 }

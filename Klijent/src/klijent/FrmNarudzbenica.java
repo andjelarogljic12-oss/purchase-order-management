@@ -28,20 +28,23 @@ public class FrmNarudzbenica extends javax.swing.JFrame {
     private final Komunikacija komunikacija;
     private List<Materijal> materijali;
     private List<Musterija> musterije;
-    
+
     private final List<StavkaNarudzbenice> stavke = new ArrayList<>();
     private DefaultTableModel model;
-    
+    private Narudzbenica zaIzmenu;
+    private final List<StavkaNarudzbenice> originalneStavke = new ArrayList<>();
+
     public FrmNarudzbenica(Komunikacija komunikacija) {
         initComponents();
         this.komunikacija = komunikacija;
         txtDatum.setText(new SimpleDateFormat("dd.MM.yyyy").format(new Date()));
         model = new DefaultTableModel(
-                new Object[] {"Rb", "Materijal", "Količina", "Iznos bez PDV", "Iznos sa PDV"}, 0);
+                new Object[]{"Rb", "Materijal", "Količina", "Iznos bez PDV", "Iznos sa PDV"}, 0);
         tblStavke.setModel(model);
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         ucitajPodatke();
-        
+
     }
 
     /**
@@ -71,6 +74,7 @@ public class FrmNarudzbenica extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         lblUkupnoSaPdv = new javax.swing.JLabel();
         btnSacuvaj = new javax.swing.JButton();
+        btnObrisiStavku = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -131,50 +135,62 @@ public class FrmNarudzbenica extends javax.swing.JFrame {
             }
         });
 
+        btnObrisiStavku.setText("Obrisi stavku");
+        btnObrisiStavku.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnObrisiStavkuActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGap(92, 92, 92)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 597, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(24, 24, 24)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(cmbMaterijal, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(cmbMaterijal, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(cmbMusterija, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(115, 115, 115)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 54, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtDatum, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
+                                    .addComponent(txtKolicina))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(btnDodajStavku, javax.swing.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE)
+                                    .addComponent(btnObrisiStavku, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(8, 8, 8))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cmbMusterija, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(115, 115, 115)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 54, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtDatum, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
-                            .addComponent(txtKolicina))
-                        .addGap(26, 26, 26)
-                        .addComponent(btnDodajStavku, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblUkupnaKolicina, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(52, 52, 52)
-                        .addComponent(jLabel6)
-                        .addGap(18, 18, 18)
-                        .addComponent(lblUkupnoBezPdv, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(34, 34, 34)
-                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblUkupnoSaPdv, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnSacuvaj))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGap(68, 68, 68)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 597, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(lblUkupnaKolicina, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(52, 52, 52)
+                                .addComponent(jLabel6)
+                                .addGap(18, 18, 18)
+                                .addComponent(lblUkupnoBezPdv, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(34, 34, 34)
+                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblUkupnoSaPdv, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnSacuvaj)))))
                 .addContainerGap(12, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -189,17 +205,19 @@ public class FrmNarudzbenica extends javax.swing.JFrame {
                                 .addComponent(txtDatum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jLabel1)
-                                .addComponent(cmbMusterija, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(28, 28, 28)
-                        .addComponent(btnDodajStavku, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cmbMusterija, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(38, 38, 38))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(btnDodajStavku, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(30, 30, 30)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(cmbMaterijal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4)
-                    .addComponent(txtKolicina, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 79, Short.MAX_VALUE)
+                    .addComponent(txtKolicina, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnObrisiStavku, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(39, 39, 39)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -221,33 +239,33 @@ public class FrmNarudzbenica extends javax.swing.JFrame {
     }//GEN-LAST:event_txtDatumActionPerformed
 
     private void btnDodajStavkuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDodajStavkuActionPerformed
-        
+
         int index = cmbMaterijal.getSelectedIndex();
-        if(index < 0){
+        if (index < 0) {
             JOptionPane.showMessageDialog(this, "Izaberi materijal");
             return;
         }
-        
+
         double kolicina;
         try {
             kolicina = Double.parseDouble(txtKolicina.getText().trim().replace(',', '.'));
-            
+
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Kolicina mora da vude broj");
             return;
         }
-        
-        if (kolicina <= 0){
+
+        if (kolicina <= 0) {
             JOptionPane.showMessageDialog(this, "Kolicina mora da bude ve'a od nule");
             return;
         }
-        
+
         Materijal m = materijali.get(index);
-        if(kolicina > m.getStanje()){
-            JOptionPane.showMessageDialog(this, "Na stanju je samo " + m.getStanje() + " "+m.getJedinicaMere()+".");
+        if (kolicina > raspolozivo(m)) {
+            JOptionPane.showMessageDialog(this, "Na stanju je samo " + raspolozivo(m) + " " + m.getJedinicaMere() + ".");
             return;
         }
-        
+
         StavkaNarudzbenice s = new StavkaNarudzbenice();
         s.setRedniBr(stavke.size() + 1);
         s.setMaterijal(m);
@@ -257,19 +275,19 @@ public class FrmNarudzbenica extends javax.swing.JFrame {
         s.setIznosBezPdv(m.getCenaBezPdv() * kolicina);
         s.setIznosSaPdv(m.getCenaSaPdv() * kolicina);
         stavke.add(s);
-        
+
         model.addRow(new Object[]{s.getRedniBr(), m.getNazivMaterijala(), kolicina,
             s.getIznosBezPdv(), s.getIznosSaPdv()});
-        
+
         osveziUkupno();
         txtKolicina.setText("");
-        
-       
+
+
     }//GEN-LAST:event_btnDodajStavkuActionPerformed
 
     private void btnSacuvajActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSacuvajActionPerformed
-        
-                int indexMusterije = cmbMusterija.getSelectedIndex();
+
+        int indexMusterije = cmbMusterija.getSelectedIndex();
         if (indexMusterije < 0) {
             JOptionPane.showMessageDialog(this, "Izaberi mušteriju.");
             return;
@@ -306,10 +324,19 @@ public class FrmNarudzbenica extends javax.swing.JFrame {
         n.setUkupnaCenaSaPdv(saPdv);
         n.setStavke(new ArrayList<>(stavke));
 
+        if (zaIzmenu != null) {
+            n.setSifraNarudzbenice(zaIzmenu.getSifraNarudzbenice());
+        }
+        String operacija = (zaIzmenu == null) ? "SACUVAJ_NARUDZBENICU" : "IZMENI_NARUDZBENICU";
+
         try {
-            Odgovor o = komunikacija.posalji(new Zahtev("SACUVAJ_NARUDZBENICU", n));
+            Odgovor o = komunikacija.posalji(new Zahtev(operacija, n));
             if (o.isUspesno()) {
                 JOptionPane.showMessageDialog(this, "Narudžbenica je sačuvana.");
+                if (zaIzmenu != null) {
+                    dispose();
+                    return;
+                }
                 stavke.clear();
                 model.setRowCount(0);
                 osveziUkupno();
@@ -320,13 +347,31 @@ public class FrmNarudzbenica extends javax.swing.JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Greška u komunikaciji: " + e.getMessage());
         }
-        
+
     }//GEN-LAST:event_btnSacuvajActionPerformed
 
-    
+    private void btnObrisiStavkuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnObrisiStavkuActionPerformed
+
+        int red = tblStavke.getSelectedRow();
+        if (red < 0) {
+            JOptionPane.showMessageDialog(this, "Izaberi stavku u tabeli koju želiš da obrišeš.");
+            return;
+        }
+
+        stavke.remove(red);
+        for (int i = 0; i < stavke.size(); i++) {
+            stavke.get(i).setRedniBr(i + 1);
+        }
+
+        osveziTabelu();
+        osveziUkupno();
+
+    }//GEN-LAST:event_btnObrisiStavkuActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDodajStavku;
+    private javax.swing.JButton btnObrisiStavku;
     private javax.swing.JButton btnSacuvaj;
     private javax.swing.JComboBox<String> cmbMaterijal;
     private javax.swing.JComboBox<String> cmbMusterija;
@@ -349,27 +394,77 @@ public class FrmNarudzbenica extends javax.swing.JFrame {
     private void ucitajPodatke() {
         try {
             Odgovor o1 = komunikacija.posalji(new Zahtev("VRATI_MUSTERIJE", null));
-            if(!o1.isUspesno()){
+            if (!o1.isUspesno()) {
                 throw new Exception(o1.getPoruka());
             }
             musterije = (List<Musterija>) o1.getPodaci();
             cmbMusterija.removeAllItems();
-            for(Musterija m : musterije){
+            for (Musterija m : musterije) {
                 cmbMusterija.addItem(m.getNazivFirme());
             }
-            
+
             Odgovor o2 = komunikacija.posalji(new Zahtev("VRATI_MATERIJALE", null));
             if (!o2.isUspesno()) {
                 throw new Exception(o2.getPoruka());
             }
             materijali = (List<Materijal>) o2.getPodaci();
             cmbMaterijal.removeAllItems();
-            for(Materijal m : materijali){
+            for (Materijal m : materijali) {
                 cmbMaterijal.addItem(m.getNazivMaterijala());
             }
-            
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Greska pri ucitavanju: " + e.getMessage());
+        }
+    }
+
+    public FrmNarudzbenica(Komunikacija komunikacija, Narudzbenica zaIzmenu) {
+        this(komunikacija);
+        this.zaIzmenu = zaIzmenu;
+        ucitajZaIzmenu();
+    }
+
+    private void ucitajZaIzmenu() {
+        setTitle("Izmena narudžbenice " + zaIzmenu.getSifraNarudzbenice());
+        btnSacuvaj.setText("Sačuvaj izmene");
+        txtDatum.setText(new SimpleDateFormat("dd.MM.yyyy").format(zaIzmenu.getDatum()));
+
+        for (int i = 0; i < musterije.size(); i++) {
+            if (musterije.get(i).getMusterijaId() == zaIzmenu.getMusterija().getMusterijaId()) {
+                cmbMusterija.setSelectedIndex(i);
+            }
+        }
+
+        try {
+            Odgovor o = komunikacija.posalji(new Zahtev("VRATI_STAVKE", zaIzmenu.getSifraNarudzbenice()));
+            if (!o.isUspesno()) {
+                throw new Exception(o.getPoruka());
+            }
+            List<StavkaNarudzbenice> ucitane = (List<StavkaNarudzbenice>) o.getPodaci();
+            stavke.addAll(ucitane);
+            originalneStavke.addAll(ucitane);
+            osveziTabelu();
+            osveziUkupno();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Greška pri učitavanju stavki: " + e.getMessage());
+        }
+    }
+
+    private double raspolozivo(Materijal m) {
+        double ukupno = m.getStanje();
+        for (StavkaNarudzbenice s : originalneStavke) {
+            if (s.getMaterijal().getMaterijalId() == m.getMaterijalId()) {
+                ukupno += s.getKolicina();
+            }
+        }
+        return ukupno;
+    }
+
+    private void osveziTabelu() {
+        model.setRowCount(0);
+        for (StavkaNarudzbenice s : stavke) {
+            model.addRow(new Object[]{s.getRedniBr(), s.getMaterijal().getNazivMaterijala(),
+                s.getKolicina(), s.getIznosBezPdv(), s.getIznosSaPdv()});
         }
     }
 

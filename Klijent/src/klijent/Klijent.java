@@ -27,13 +27,11 @@ public class Klijent {
         try {
             Komunikacija k = new Komunikacija();
             k.poveziSe();
-            java.awt.EventQueue.invokeLater(() -> new FrmNarudzbenica(k).setVisible(true));
+            java.awt.EventQueue.invokeLater(() -> new FrmGlavna(k).setVisible(true));
         } catch (Exception e) {
-             javax.swing.JOptionPane.showMessageDialog(null,
+            javax.swing.JOptionPane.showMessageDialog(null,
                     "Ne mogu da se povežem sa serverom: " + e.getMessage());
         }
     }
 
-    
-    
 }
